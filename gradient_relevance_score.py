@@ -9,6 +9,7 @@ class DistilBertAttributor:
         self.model.eval()
 
         self.device = torch.device("mps" if torch.backends.mps.is_available() and not force_cpu else "cpu")
+        print("Using {} device".format(self.device))
         self.model.to(self.device)
 
         self.max_length = max_length
