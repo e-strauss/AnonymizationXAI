@@ -2,8 +2,8 @@ import json
 import pandas as pd
 
 # Path to your file
-file_path = "train_sft.jsonl"
-output_file_path = "training_data.jsonl"
+file_path = "../DB-bio/train_sft.jsonl"
+output_file_path = "../DB-bio/training_data.jsonl"
 # Load all lines from the JSONL file
 with open(file_path, "r") as file:
     data = [json.loads(line) for line in file]

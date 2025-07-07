@@ -8,6 +8,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report
 from tqdm import tqdm
 
+
 # === Step 1: Load data from JSONL files ===
 def load_jsonl(file_path):
     data = []
@@ -17,9 +18,10 @@ def load_jsonl(file_path):
             data.append(item)
     return [x["text"] for x in data], [x["label"] for x in data]
 
-train_texts, train_labels = load_jsonl("train.jsonl")
-val_texts, val_labels = load_jsonl("val.jsonl")
-test_texts, test_labels = load_jsonl("test.jsonl")
+
+train_texts, train_labels = load_jsonl("../DB-bio/train.jsonl")
+val_texts, val_labels = load_jsonl("../DB-bio/val.jsonl")
+test_texts, test_labels = load_jsonl("../DB-bio/test.jsonl")
 
 print((f"Loaded {len(train_texts)} training samples, "
        f"{len(val_texts)} validation samples, "
@@ -35,6 +37,7 @@ num_labels = len(label_encoder.classes_)
 # === Step 3: Tokenizer ===
 tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
 
+
 # === Step 4: Custom Dataset ===
 class TextDataset(Dataset):
     def __init__(self, texts, labels, tokenizer, max_len=512):
@@ -49,6 +52,7 @@ class TextDataset(Dataset):
         item['labels'] = torch.tensor(self.labels[idx])
         return item
 
+
 # === Step 5: Create Datasets and DataLoaders ===
 train_dataset = TextDataset(train_texts, train_labels, tokenizer)
 val_dataset = TextDataset(val_texts, val_labels, tokenizer)
@@ -62,7 +66,6 @@ lengths = [len(tokenizer.encode(t)) for t in train_texts]
 print(f"Max input length: {max(lengths)}")
 print(f"Percentage over 512: {sum(l > 512 for l in lengths) / len(lengths) * 100:.2f}%")
 
-
 # === Step 6: Model, Optimizer, Device ===
 if torch.backends.mps.is_available():
     device = torch.device("mps")
@@ -74,6 +77,7 @@ else:
 model = DistilBertForSequenceClassification.from_pretrained("distilbert-base-uncased", num_labels=num_labels)
 model.to(device)
 optimizer = AdamW(model.parameters(), lr=2e-5)
+
 
 # === Step 7: Training + Evaluation Loops ===
 def train(model, loader):
@@ -89,6 +93,7 @@ def train(model, loader):
         total_loss += loss.item()
     return total_loss / len(loader)
 
+
 def evaluate(model, loader):
     model.eval()
     preds, true = [], []
@@ -101,12 +106,13 @@ def evaluate(model, loader):
             true.extend(batch['labels'].cpu().numpy())
     return preds, true
 
+
 # === Step 8: Train the model ===
 for epoch in range(1):
-    print(f"\nEpoch {epoch+1}")
+    print(f"\nEpoch {epoch + 1}")
     train_loss = train(model, train_loader)
     print(f"Train Loss: {train_loss:.4f}")
-    
+
     val_preds, val_true = evaluate(model, val_loader)
     print(classification_report(val_true, val_preds, target_names=[str(x) for x in label_encoder.classes_]))
 # === Step 9: Final test evaluation ===
@@ -116,5 +122,5 @@ print(classification_report(test_true, test_preds, target_names=[str(x) for x in
 print(f"Predictions: {len(test_preds)}, Ground Truth: {len(test_true)}")
 
 # === Step 10: Save model & tokenizer ===
-model.save_pretrained("final_distilbert-model")
-tokenizer.save_pretrained("final_distilbert-model")
+model.save_pretrained("../final_distilbert-model")
+tokenizer.save_pretrained("../final_distilbert-model")
