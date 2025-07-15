@@ -5,7 +5,7 @@ from captum.attr import LayerIntegratedGradients
 from transformers import DistilBertForSequenceClassification, DistilBertTokenizer
 
 function_words = ["a", "an", "is", "from", "in", "and", "the", "were", "was", "of", "to", "at", "by", "for", 'on',
-                  "also", "as", 'with']
+                  "also", "as", 'with', "has", "have", "had",]
 
 
 def merge_word_pieces(tokens, scores, tids):
@@ -107,7 +107,7 @@ class FeatureImportanceGradient:
             triples = [(key, value[0], value[1]) for key, value in unique_tokens.items()]
             return sorted(triples, key=lambda x: x[2], reverse=True)[:k]
         else:
-            top_k = sorted(unique_tokens.values(), key=lambda x: [1])[:k]
+            top_k = sorted(unique_tokens.values(), key=lambda x: x[1], reverse=True)[:k]
             if return_scores:
                 return top_k
             return [word for (word, score) in top_k]
@@ -157,8 +157,11 @@ class NaturalLanguageExplainer:
         reply = data["choices"][0]["message"]["content"]
         return reply
 
-    def get_explanation(self, text, verbose=False):
-        target, important_tokens = self.feature_importance.get_feature_importance(text, return_target=True)
+    def get_explanation(self, text, verbose=False, k=None):
+        args = {"text": text, "return_target": True}
+        if k is not None:
+            args["k"] = k
+        target, important_tokens = self.feature_importance.get_feature_importance(**args)
         marked_text = mark_important_tokens(text.lower(), important_tokens)
 
         if verbose:
@@ -173,19 +176,17 @@ class NaturalLanguageExplainer:
 
 
 if __name__ == '__main__':
-    ttext = ('Stephen J. Gordon (born 4 September 1986) is a chess grandmaster from Oldham, Greater Manchester, '
-             'England. In September 2004 he took a break from his A-level studies at The Blue Coat School, Oldham '
-             'to compete in the thirteenth Monarch Assurance Isle of Man International. In 2005, while still a FIDE '
-             'Master, he finished 6th in the British Championships ahead of a Grandmaster and several International '
-             'Masters. At the EU Individual Open Chess Championship held at Liverpool in 2006, he led the tournament '
-             'after eight rounds and finished a very creditable (joint) second, a half point behind winner Nigel Short '
-             'and level with Luke McShane among others. Probably his best result to date however, was second place in '
-             'the 2007 British Championship, narrowly losing his share of the lead in the final round. In previous '
-             'rounds, he defeated both tournament victor Jacob Aagaard and previous champion Jonathan Rowson. By 2008, '
-             'his rating had reached grandmaster level, although the title itself had not yet been secured. At the '
-             'British Championship in Liverpool, he almost repeated his performance of the previous year, by taking a '
-             'share of third place. He was the British under-21 Champion each consecutive year between 2005 and 2008. '
-             'He became a grandmaster on 1 August 2009. He has been one of the co-presenters of the chess podcast The '
-             'Full English Breakfast since its inaugural show in October 2010.')
+    ttext = ("Alex Reymundo is a Mexican-American comedian and actor, who was featured on the 2007 ALMA Awards. He was "
+             "born in Acapulco, Mexico, where he lived until his family moved to Texas in the United States where "
+             "lived from the age of two to twenty-two. He lived in Kentucky for seven years. Reymundo is married and "
+             "has two children, a boy and a girl. Reymundo had a one-hour special that aired on Comedy Central in "
+             "2007 called Alex Reymundo Hick-Spanic: Live in Albuquerque. He was also featured in the Showtime and "
+             "Comedy Central special The Original Latin Kings of Comedy along with other Latin comedians such as "
+             "George Lopez and Paul Rodriguez. He received an ALMA Award in 2008 for \"Outstanding Comedy Special\" "
+             "for his one-hour comedy special \"Alex Reymundo Hick-Spanic, Live in Albuquerque.\" He is currently "
+             "opening up for fellow comedian (and brother-in-law) Ron White on his tour. His sister is Margo Rey.")
+
+    # explainer = FeatureImportanceGradient(max_length=256)
+    # print(explainer.get_feature_importance(ttext, k=45))
     explainer = NaturalLanguageExplainer(max_length=256)
-    print(explainer.get_explanation(ttext, verbose=True))
+    print(explainer.get_explanation(ttext, verbose=True, k=20))
