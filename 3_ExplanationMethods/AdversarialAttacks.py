@@ -10,9 +10,9 @@ import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 #Load model and tokenizer
-model_path = model_path = "/Users/yoana/Desktop/Quality and Usability Project/DB-bio/final_distilbert-model"
+model_path = model_path = "../DB-bio/final_distilbert-model"
 model = AutoModelForSequenceClassification.from_pretrained(model_path)
-model.to(device)  # <--- Move model to device
+model.to(device)  
 
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 wrapped_model = HuggingFaceModelWrapper(model, tokenizer)
