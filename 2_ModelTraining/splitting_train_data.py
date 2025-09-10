@@ -30,7 +30,6 @@ def stratified_70_20_10_split(data, label_key, seed=42):
     return train_data, val_data, test_data
 
 
-# ---- Usage ----
 
 jsonl_path = '../DB-bio/training_data.jsonl'
 label_key = 'label'
@@ -38,7 +37,6 @@ label_key = 'label'
 data = load_jsonl(jsonl_path)
 train, val, test = stratified_70_20_10_split(data, label_key)
 
-# Save to files
 save_jsonl(train, '../DB-bio/train.jsonl')
 save_jsonl(val, '../DB-bio/val.jsonl')
 save_jsonl(test, '../DB-bio/test.jsonl')
