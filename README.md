@@ -11,7 +11,8 @@ This repository contains the code for the project When Text Anonymization Meets 
 - **`ExplanationMethods/`** – implementations of the explainability methods used in the project.  
 - **`ExplanationResults/`** – stored outputs and results from the explainability methods.  
 - **`Evaluation/`** – scripts for evaluating the explainability methods.  
-- **`Survey/`** – files related to the user study conducted in this project.  
+- **`Survey/`** – files related to the user study conducted in this project.
+- **`DB-bio/`** - the original DB-bio dataset.
 
 
 ##  Getting Started
@@ -44,7 +45,7 @@ cd AnonymizationXAI
 ```sh
 python -m venv .venv 
 source .venv/bin/activate
-pip install -r utils/requirements.txt
+pip install -r requirements.txt
 ```
 
 ---
