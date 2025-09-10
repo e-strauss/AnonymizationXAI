@@ -7,7 +7,11 @@ This repository contains the code for the project When Text Anonymization Meets 
 
 ##  Project Structure
 
-
+- **`ModelTraining/`** – scripts for preprocessing the dataset, creating train/test/validation splits, and training the DistilBERT model.  
+- **`ExplanationMethods/`** – implementations of the explainability methods used in the project.  
+- **`ExplanationResults/`** – stored outputs and results from the explainability methods.  
+- **`Evaluation/`** – scripts for evaluating the explainability methods.  
+- **`Survey/`** – files related to the user study conducted in this project.  
 
 
 ##  Getting Started
@@ -45,14 +49,9 @@ pip install -r utils/requirements.txt
 
 ---
 
-##  License
-
-This project is protected under the [SELECT-A-LICENSE](https://choosealicense.com/licenses) License. For more details, refer to the [LICENSE](https://choosealicense.com/licenses/) file.
-
----
 
 ##  Acknowledgments
 
-- List any resources, contributors, inspiration, etc. here.
+- We are grateful to Qianli Wang and Dr. Nils Feldhus for their valuable guidance and support throughout this project.  
 
 ---
